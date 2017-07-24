@@ -1,0 +1,51 @@
+{
+  "name": "js-php-data",
+  "version": "0.0.0",
+  "description": "Convert simple JS data to PHP",
+  "main": "dist/cjs.js",
+  "scripts": {
+    "test": "standard && jest",
+    "prepublishOnly": "npm run build",
+    "build-prepare": "make-dir dist && make-dir tmp",
+    "build-es5": "buble -i src -o tmp --yes dangerousForOf --no modules",
+    "build-browser-es5": "rollup -c build/config.rollup.browser.es5.js | uglifyjs --compress --mangle > dist/browser.min.js",
+    "build-browser-es2015": "rollup -c build/config.rollup.browser.es2015.js | uglifyjs --compress --mangle > dist/browser.es2015.min.js",
+    "build-browser-module": "uglifyjs tmp/index.js --compress --mangle > dist/browser.module.min.js",
+    "build-node-es5": "rollup -c build/config.rollup.node.es5.js",
+    "build-node-es2015": "rollup -c build/config.rollup.node.es2015.js",
+    "build-cleanup": "del-cli tmp",
+    "build": "npm run build-prepare && npm run build-es5 && npm run build-browser-es5 && npm run build-browser-es2015 && npm run build-browser-module && npm run build-node-es5 && npm run build-node-es2015 && npm run build-cleanup"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Loilo/node-js-php-data.git"
+  },
+  "keywords": [
+    "php",
+    "data",
+    "convert"
+  ],
+  "author": "Florian Reuschel <florian@loilo.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Loilo/node-js-php-data/issues"
+  },
+  "homepage": "https://github.com/Loilo/node-js-php-data#readme",
+  "devDependencies": {
+    "buble": "^0.15.2",
+    "del-cli": "^1.1.0",
+    "jest": "^20.0.4",
+    "make-dir-cli": "^1.0.0",
+    "rollup": "^0.45.2",
+    "standard": "^10.0.2",
+    "uglify-es": "^3.0.26"
+  },
+  "standard": {
+    "ignore": [
+      "dist/",
+      "build/",
+      "test/",
+      "tmp/"
+    ]
+  }
+}
