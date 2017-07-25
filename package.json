@@ -1,6 +1,6 @@
 {
   "name": "js-php-data",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Convert simple JS data to PHP",
   "main": "dist/cjs.js",
   "scripts": {
