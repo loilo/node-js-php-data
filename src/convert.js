@@ -71,29 +71,17 @@ export default function internalConvert (value, options = {}, { refs = [], trail
     } else {
       let errorTrail
       if (startsWith(err.message, 'err:type:')) {
-        if (trail.length) {
-          errorTrail = JSON.parse(err.message.slice(9)).slice(0, -1)
-          throw new Error(`Disallowed value type in ${printTrail(errorTrail)}`)
-        } else {
-          throw new Error(`Disallowed input type`)
-        }
+        errorTrail = JSON.parse(err.message.slice(9)).slice(0, -1)
+        throw new Error(`Disallowed value type in ${printTrail(errorTrail)}`)
       } else if (startsWith(err.message, 'err:plain:')) {
-        if (trail.length) {
-          errorTrail = JSON.parse(err.message.slice(10)).slice(0, -1)
-          throw new Error(`Disallowed non-plain object in ${printTrail(errorTrail)}`)
-        } else {
-          throw new Error(`Disallowed non-plain object input`)
-        }
+        errorTrail = JSON.parse(err.message.slice(10)).slice(0, -1)
+        throw new Error(`Disallowed non-plain object in ${printTrail(errorTrail)}`)
       } else if (startsWith(err.message, 'err:circular:')) {
         errorTrail = JSON.parse(err.message.slice(13))
         throw new Error(`Circular reference: ${printTrail(errorTrail)}`)
       } else if (startsWith(err.message, 'err:NaN:')) {
-        if (trail.length) {
-          errorTrail = JSON.parse(err.message.slice(8))
-          throw new Error(`Invalid NaN: ${printTrail(errorTrail)}`)
-        } else {
-          throw new Error('Invalid NaN input')
-        }
+        errorTrail = JSON.parse(err.message.slice(8))
+        throw new Error(`Invalid NaN: ${printTrail(errorTrail)}`)
       } else {
         throw err
       }
