@@ -2,7 +2,7 @@
 
 This package takes a JavaScript expression, evaluates and converts it to a PHP expression.
 
-[Try it out in the online demo.](https://loilo.github.io/node-js-php-data)
+[Try it out in the online demo.](https://loilo.github.io/node-js-data-php/)
 
 ---
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
