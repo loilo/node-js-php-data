@@ -156,7 +156,7 @@ function internalConvert (value, options, ref) {
       case 'null': return 'null'
       case 'nullWithComment': return 'null /* CIRCULAR */'
       case 'string': return stringify('::CIRCULAR::')
-      case 'throw': throw new Error('err:circular:' + JSON.stringify(trail))
+      case 'throw': handleError(new Error('err:circular:' + JSON.stringify(trail)));
     }
   }
 
@@ -165,30 +165,38 @@ function internalConvert (value, options, ref) {
       case 'null': return 'null'
       case 'nullWithComment': return 'null /* NaN */'
       case 'string': return stringify('::NaN::')
-      case 'throw': throw new Error('err:NaN:' + JSON.stringify(trail))
+      case 'throw': handleError(new Error('err:NaN:' + JSON.stringify(trail)));
     }
   }
 
   function handleError (err) {
-    if (trail.length) {
-      throw err
-    } else {
-      var errorTrail;
-      if (startsWith(err.message, 'err:type:')) {
-        errorTrail = JSON.parse(err.message.slice(9)).slice(0, -1);
+    var errorTrail;
+    if (startsWith(err.message, 'err:type:')) {
+      errorTrail = JSON.parse(err.message.slice(9)).slice(0, -1);
+      if (errorTrail.length) {
         throw new Error(("Disallowed value type in " + (printTrail(errorTrail))))
-      } else if (startsWith(err.message, 'err:plain:')) {
-        errorTrail = JSON.parse(err.message.slice(10)).slice(0, -1);
+      } else {
+        throw new Error("Disallowed input type")
+      }
+    } else if (startsWith(err.message, 'err:plain:')) {
+      errorTrail = JSON.parse(err.message.slice(10)).slice(0, -1);
+      if (errorTrail.length) {
         throw new Error(("Disallowed non-plain object in " + (printTrail(errorTrail))))
-      } else if (startsWith(err.message, 'err:circular:')) {
-        errorTrail = JSON.parse(err.message.slice(13));
-        throw new Error(("Circular reference: " + (printTrail(errorTrail))))
-      } else if (startsWith(err.message, 'err:NaN:')) {
-        errorTrail = JSON.parse(err.message.slice(8));
+      } else {
+        throw new Error("Disallowed non-plain object input")
+      }
+    } else if (startsWith(err.message, 'err:circular:')) {
+      errorTrail = JSON.parse(err.message.slice(13));
+      throw new Error(("Circular reference: " + (printTrail(errorTrail))))
+    } else if (startsWith(err.message, 'err:NaN:')) {
+      errorTrail = JSON.parse(err.message.slice(8));
+      if (errorTrail.length) {
         throw new Error(("Invalid NaN: " + (printTrail(errorTrail))))
       } else {
-        throw err
+        throw new Error('Invalid NaN input')
       }
+    } else {
+      throw err
     }
   }
 
