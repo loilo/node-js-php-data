@@ -137,7 +137,7 @@ function internalConvert (value, options, ref) {
 
   function stringify (value, delimiter) {
     if (!delimiter) { delimiter = quotes === 'single' ? "'" : '"'; }
-    return delimiter + value.replace(new RegExp(escapeRegex(delimiter), 'g'), '\\' + delimiter) + delimiter
+    return delimiter + value.replace(/\\/g, '\\\\').replace(new RegExp(escapeRegex(delimiter), 'g'), '\\' + delimiter) + delimiter
   }
 
   function indent (level) {
