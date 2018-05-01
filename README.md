@@ -6,6 +6,8 @@ This package takes a JavaScript expression, evaluates and converts it to a PHP e
 
 ---
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![Travis](https://img.shields.io/travis/Loilo/node-js-php-data.svg)](https://travis-ci.org/Loilo/node-js-php-data)
+[![npm](https://img.shields.io/npm/v/js-php-data.svg)](https://www.npmjs.com/package/js-php-data)
 ---
 
 ## Why?
