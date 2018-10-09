@@ -40,6 +40,9 @@
     "standard": "^10.0.2",
     "uglify-es": "^3.0.26"
   },
+  "jest": {
+    "testURL": "http://localhost/"
+  },
   "standard": {
     "ignore": [
       "dist/",
