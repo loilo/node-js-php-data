@@ -8,9 +8,9 @@
     "prepublishOnly": "npm run build",
     "build-prepare": "make-dir dist && make-dir tmp",
     "build-es5": "buble -i src -o tmp --yes dangerousForOf --no modules",
-    "build-browser-es5": "rollup -c build/config.rollup.browser.es5.js | uglifyjs --compress --mangle > dist/browser.min.js",
-    "build-browser-es2015": "rollup -c build/config.rollup.browser.es2015.js | uglifyjs --compress --mangle > dist/browser.es2015.min.js",
-    "build-browser-module": "uglifyjs tmp/index.js --compress --mangle > dist/browser.module.min.js",
+    "build-browser-es5": "rollup -c build/config.rollup.browser.es5.js | terser --compress --mangle > dist/browser.min.js",
+    "build-browser-es2015": "rollup -c build/config.rollup.browser.es2015.js | terser --compress --mangle > dist/browser.es2015.min.js",
+    "build-browser-module": "rollup -c build/config.rollup.esm.js | terser --compress --mangle > dist/browser.module.min.js",
     "build-node-es5": "rollup -c build/config.rollup.node.es5.js",
     "build-node-es2015": "rollup -c build/config.rollup.node.es2015.js",
     "build-cleanup": "del-cli tmp",
@@ -32,16 +32,13 @@
   },
   "homepage": "https://github.com/Loilo/node-js-php-data#readme",
   "devDependencies": {
-    "buble": "^0.15.2",
-    "del-cli": "^1.1.0",
-    "jest": "^22.4.3",
-    "make-dir-cli": "^1.0.0",
-    "rollup": "^0.45.2",
-    "standard": "^10.0.2",
-    "uglify-es": "^3.0.26"
-  },
-  "jest": {
-    "testURL": "http://localhost/"
+    "buble": "^0.19.7",
+    "del-cli": "^2.0.0",
+    "jest": "^24.8.0",
+    "make-dir-cli": "^2.0.0",
+    "rollup": "^1.14.0",
+    "standard": "^12.0.1",
+    "terser": "^4.0.0"
   },
   "standard": {
     "ignore": [
@@ -50,6 +47,5 @@
       "test/",
       "tmp/"
     ]
-  },
-  "dependencies": {}
+  }
 }

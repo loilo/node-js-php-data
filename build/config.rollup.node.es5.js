@@ -1,6 +1,8 @@
 export default {
-  entry: 'tmp/index.js',
-  format: 'cjs',
-  dest: 'dist/cjs.es5.js',
+  input: 'tmp/index.js',
+  output: {
+    format: 'cjs',
+    file: 'dist/cjs.es5.js'
+  },
   onwarn () {}
 }

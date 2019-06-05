@@ -1,6 +1,8 @@
 export default {
-  entry: 'src/index.js',
-  format: 'cjs',
-  dest: 'dist/cjs.js',
+  input: 'src/index.js',
+  output: {
+    format: 'cjs',
+    file: 'dist/cjs.js'
+  },
   onwarn () {}
 }

@@ -1,6 +1,8 @@
 export default {
-  entry: 'tmp/index.js',
-  format: 'iife',
-  moduleName: 'jsPhpData',
+  input: 'tmp/index.js',
+  output: {
+    format: 'iife',
+    name: 'jsPhpData'
+  },
   onwarn () {}
 }
