@@ -1,4 +1,4 @@
-const convert = require('../dist/cjs')
+const convert = require('../dist/js-php-data')
 
 test('converts `true` to `true`', () => {
   expect(convert(true)).toBe('true')

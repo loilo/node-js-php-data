@@ -1,27 +1,24 @@
 # JS data to PHP converter
 
-This package takes a JavaScript expression, evaluates and converts it to a PHP expression.
+[![Test status on Travis](https://badgen.net/travis/loilo/node-js-php-data?label=build)](https://travis-ci.org/loilo/node-js-php-data)
+[![Version on npm](https://badgen.net/npm/v/js-php-data)](https://www.npmjs.com/package/js-php-data)
 
-[Try it out in the online demo.](https://loilo.github.io/node-js-php-data/)
+> This package takes a JavaScript expression and converts it into a PHP expression.
 
----
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![Travis](https://img.shields.io/travis/Loilo/node-js-php-data.svg)](https://travis-ci.org/Loilo/node-js-php-data)
-[![npm](https://img.shields.io/npm/v/js-php-data.svg)](https://www.npmjs.com/package/js-php-data)
----
+[✨ Try it out in the online demo.](https://loilo.github.io/node-js-php-data/)
 
 ## Why?
 
-I was missing a nice & clean JavaScript to PHP data converter.
+For a PHP/JS developer, it's quite common having to convert JavaScript (or even JSON) data into a PHP array. This is tedious to do manually and I wanted a copy&paste solution.
 
-The [online demo of js2php](http://endel.me/js2php/) basically does the job, but provides no opportunity for any kind of output formatting.
+Therefore, the actual purpose of this package is its online demo, the package is merely a byproduct.
 
 ## Installation
 
 Install it from npm:
 
 ```bash
-npm install --save js-php-data
+npm install js-php-data
 ```
 
 ### Use in Node.js
@@ -32,40 +29,25 @@ To use this package in Node, you can just `require`:
 const jsPhpData = require('js-php-data')
 ```
 
-If you need this to work in Node.js v4 or below, try this instead:
-
-```javascript
-var jsPhpData = require('js-php-data/dist/cjs.es5')
-```
-
-### Use in the browser
+### Use in the Browser
 
 You can use this package in your browser with one of the following snippets:
 
-* The most common version. Compiled to ES5, runs in all major browsers down to IE 11:
+- Compiled to ES5, runs in all major browsers down to IE 11 (exposes a global function `jsPhpData`):
 
   ```html
-  <script src="node_modules/js-php-data/dist/browser.min.js"></script>
+  <script src="https://unpkg.com/js-php-data/dist/js-php-data.umd.js"></script>
   ```
 
-* Not transpiled to ES5, runs in browsers that support ES2015:
-
-  ```html
-  <script src="node_modules/js-php-data/dist/browser.es2015.min.js"></script>
-  ```
-
-* If you're really living on the bleeding edge and use ES modules directly in the browser, you can `import` the package as well:
+- As an ES module, for modern browsers:
 
   ```javascript
-  import jsPhpData from "./node_modules/js-php-data/dist/browser.module.min.js"
+  import jsPhpData from 'https://unpkg.com/js-php-data'
   ```
-
-  As opposed to the snippets above, this will not create a global `jsPhpData` function.
-
 
 ## Usage
 
-Once you have got hold of the `jsPhpData` function, you can use it by passing it a value.
+Once you have somehow imported the `jsPhpData` function from this module, you can use it by passing it a value.
 
 ```javascript
 jsPhpData({
@@ -75,8 +57,8 @@ jsPhpData({
 
 /*
 [
-  'foo' => 'bar',
-  'baz' => 5
+    'foo' => 'bar',
+    'baz' => 5
 ]
 */
 ```
@@ -167,10 +149,10 @@ If set to `false`, the value will be replaced with `null`.
 
 How to handle circular references.
 
-* `"null"`: replace them with `null`
-* `"nullWithComment"`: replace them with `null` and a adjoining `/* CIRCULAR */` comment
-* `"string"`: replace them with `"::CIRCULAR::"`
-* `"throw"`: Throw an error
+- `"null"`: replace them with `null`
+- `"nullWithComment"`: replace them with `null` and a adjoining `/* CIRCULAR */` comment
+- `"string"`: replace them with `"::CIRCULAR::"`
+- `"throw"`: Throw an error
 
 ---
 
@@ -182,11 +164,10 @@ How to handle circular references.
 
 How to handle circular references.
 
-* `"null"`: replace them with `null`
-* `"nullWithComment"`: replace them with `null` and a adjoining `/* NaN */` comment
-* `"string"`: replace them with `"::NaN::"`
-* `"throw"`: Throw an error
-
+- `"null"`: replace them with `null`
+- `"nullWithComment"`: replace them with `null` and a adjoining `/* NaN */` comment
+- `"string"`: replace them with `"::NaN::"`
+- `"throw"`: Throw an error
 
 ## Known limitations
 

@@ -1,241 +1,211 @@
-import {
-  isPlainObject, entries, extend,
-  has,
-  isNonNegativeInteger,
-  escapeRegex, startsWith
-} from './helpers'
+import { isPlainObject, escapeRegex } from './helpers'
 
-export default function internalConvert (value, options = {}, { refs = [], trail = [] } = {}) {
+export default function internalConvert(
+  value,
+  options = {},
+  { refs = [], trail = [] } = {}
+) {
   const {
     castToObject = false,
-    bracketArrays = true,
-    indentation = 2,
-    trailingCommas = false,
-    startingIndentationLevel = 0,
     quotes = 'single',
     removeUndefinedProperties = true,
     onCircular = 'nullWithComment',
     onNaN = 'nullWithComment'
   } = options
 
-  if (indentation !== 'tab' && !isNonNegativeInteger(indentation)) {
-    throw new Error('`indentation` must be non-negative integer or "tab"')
-  }
-  if (!has([ 'single', 'double' ], quotes)) {
-    throw new Error('`quotes` must be either "single" or "double"')
-  }
-
-  const unconvertableOptions = [ 'null', 'nullWithComment', 'string', 'throw' ]
-  if (!has(unconvertableOptions, onCircular)) {
-    throw new Error('`onCircular` must be either "null", "nullWithComment", "string" or "throw"')
-  }
-  if (!has(unconvertableOptions, onNaN)) {
-    throw new Error('`onNaN` must be either "null", "nullWithComment", "string" or "throw"')
+  function stringify(value, delimiter = quotes === 'single' ? "'" : '"') {
+    return (
+      delimiter +
+      value
+        .replace(/\\/g, '\\\\')
+        .replace(new RegExp(escapeRegex(delimiter), 'g'), `\\${delimiter}`) +
+      delimiter
+    )
   }
 
-  function stringify (value, delimiter) {
-    if (!delimiter) delimiter = quotes === 'single' ? "'" : '"'
-    return delimiter + value.replace(/\\/g, '\\\\').replace(new RegExp(escapeRegex(delimiter), 'g'), '\\' + delimiter) + delimiter
-  }
-
-  function indent (level = 1) {
-    const indentationChar = indentation === 'tab' ? '\t' : ' '.repeat(indentation)
-    return indentationChar.repeat(startingIndentationLevel + level)
-  }
-
-  function outerIndent () {
-    return trail.length ? '' : indent(0)
-  }
-
-  function circular () {
+  function circular() {
     switch (onCircular) {
-      case 'null': return 'null'
-      case 'nullWithComment': return 'null /* CIRCULAR */'
-      case 'string': return stringify('::CIRCULAR::')
-      case 'throw': handleError(new Error('err:circular:' + JSON.stringify(trail)))
+      case 'null':
+        return 'null'
+      case 'nullWithComment':
+        return 'null /* CIRCULAR */'
+      case 'string':
+        return stringify('::CIRCULAR::')
+      case 'throw':
+        handleError(new Error(`err:circular:${JSON.stringify(trail)}`))
     }
   }
 
-  function notANumber () {
+  function notANumber() {
     switch (onNaN) {
-      case 'null': return 'null'
-      case 'nullWithComment': return 'null /* NaN */'
-      case 'string': return stringify('::NaN::')
-      case 'throw': handleError(new Error('err:NaN:' + JSON.stringify(trail)))
+      case 'null':
+        return 'null'
+      case 'nullWithComment':
+        return 'null /* NaN */'
+      case 'string':
+        return stringify('::NaN::')
+      case 'throw':
+        handleError(new Error(`err:NaN:${JSON.stringify(trail)}`))
     }
   }
 
-  function handleError (err) {
+  function handleError(error) {
     let errorTrail
-    if (startsWith(err.message, 'err:type:')) {
-      errorTrail = JSON.parse(err.message.slice(9)).slice(0, -1)
-      if (errorTrail.length) {
+    if (error.message.startsWith('err:type:')) {
+      errorTrail = JSON.parse(error.message.slice(9)).slice(0, -1)
+      if (errorTrail.length > 0) {
         throw new Error(`Disallowed value type in ${printTrail(errorTrail)}`)
       } else {
         throw new Error(`Disallowed input type`)
       }
-    } else if (startsWith(err.message, 'err:plain:')) {
-      errorTrail = JSON.parse(err.message.slice(10)).slice(0, -1)
-      if (errorTrail.length) {
-        throw new Error(`Disallowed non-plain object in ${printTrail(errorTrail)}`)
+    } else if (error.message.startsWith('err:plain:')) {
+      errorTrail = JSON.parse(error.message.slice(10)).slice(0, -1)
+      if (errorTrail.length > 0) {
+        throw new Error(
+          `Disallowed non-plain object in ${printTrail(errorTrail)}`
+        )
       } else {
         throw new Error(`Disallowed non-plain object input`)
       }
-    } else if (startsWith(err.message, 'err:circular:')) {
-      errorTrail = JSON.parse(err.message.slice(13))
+    } else if (error.message.startsWith('err:circular:')) {
+      errorTrail = JSON.parse(error.message.slice(13))
       throw new Error(`Circular reference: ${printTrail(errorTrail)}`)
-    } else if (startsWith(err.message, 'err:NaN:')) {
-      errorTrail = JSON.parse(err.message.slice(8))
-      if (errorTrail.length) {
+    } else if (error.message.startsWith('err:NaN:')) {
+      errorTrail = JSON.parse(error.message.slice(8))
+      if (errorTrail.length > 0) {
         throw new Error(`Invalid NaN: ${printTrail(errorTrail)}`)
       } else {
         throw new Error('Invalid NaN input')
       }
     } else {
-      throw err
+      throw error
     }
   }
 
-  function printTrail (trail) {
-    return 'INPUT' + trail.map((item, index) => {
-      if (typeof item === 'number') return '[' + String(item) + ']'
-      if (item.match(/^[a-z0-9_$]+$/i)) return `.${item}`
-      return `[${stringify(item, '"')}]`
-    }).join('')
+  function printTrail(trail) {
+    return (
+      'INPUT' +
+      trail
+        .map((item, index) => {
+          if (typeof item === 'number') return `[${item}]`
+          if (item.match(/^[a-z0-9_$]+$/i)) return `.${item}`
+          return `[${stringify(item, '"')}]`
+        })
+        .join('')
+    )
   }
 
-  function object (obj) {
-    let str = ''
+  function object(value) {
+    let result = ''
 
-    str += outerIndent()
+    if (castToObject) result += '(object) '
 
-    if (castToObject) str += '(object) '
+    result += '['
 
-    str += bracketArrays ? '[' : 'array('
-
-    let items = entries(obj)
+    let items = Object.entries(value)
 
     if (removeUndefinedProperties) {
-      items = items.filter(([ key, value ]) => typeof value !== 'undefined')
+      items = items.filter(([key, value]) => typeof value !== 'undefined')
     }
 
-    if (items.length) str += '\n'
+    if (items.length > 0) result += '\n'
 
-    let i = 1
     for (const [key, value] of items) {
       let convertedValue
       try {
-        convertedValue = internalConvert(value, extend({}, options, {
-          startingIndentationLevel: startingIndentationLevel + 1
-        }), {
-          refs: refs.concat(obj),
-          trail: trail.concat(key)
-        })
+        convertedValue = internalConvert(
+          value,
+          { ...options },
+          {
+            refs: refs.concat(value),
+            trail: trail.concat(key)
+          }
+        )
       } catch (err) {
         handleError(err)
       }
 
-      str +=
-        indent() +
-        stringify(key) +
-        ' => ' +
-        convertedValue
-
-      if (trailingCommas || i !== items.length) str += ','
-
-      str += '\n'
-      i++
+      result += `${stringify(key)} => ${convertedValue},\n`
     }
+    result += ']'
 
-    if (items.length) str += indent(0)
-
-    str += bracketArrays ? ']' : ')'
-
-    return str
+    return result
   }
 
-  function array (arr) {
-    let str = ''
+  function array(value) {
+    let result = ''
 
-    str += outerIndent()
+    result += '['
+    if (value.length > 0) result += '\n'
 
-    str += (bracketArrays ? '[' : 'array(')
-    if (arr.length) str += '\n'
-
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < value.length; i++) {
       let convertedValue
       try {
-        convertedValue = internalConvert(arr[i], extend({}, options, {
-          startingIndentationLevel: startingIndentationLevel + 1
-        }), {
-          refs: refs.concat([ arr ]),
-          trail: trail.concat(i)
-        })
+        convertedValue = internalConvert(
+          value[i],
+          { ...options },
+          {
+            refs: refs.concat([value]),
+            trail: trail.concat(i)
+          }
+        )
 
-        str += indent() + convertedValue
-        if (trailingCommas || i + 1 < arr.length) str += ','
-        str += '\n'
+        result += `${convertedValue},\n`
       } catch (err) {
         handleError(err)
       }
     }
 
-    if (arr.length) str += indent(0)
-
-    str += bracketArrays ? ']' : ')'
-    return str
+    result += ']'
+    return result
   }
 
-  let str = ''
+  let result = ''
   if (Array.isArray(value)) {
-    if (has(refs, value)) {
+    if (refs.includes(value)) {
       try {
-        str += circular()
+        result += circular()
       } catch (err) {
         return handleError(err)
       }
     } else {
-      str += array(value, options)
+      result += array(value, options)
     }
   } else if (value == null) {
-    str += outerIndent()
-    str += 'null'
+    result += 'null'
   } else if (typeof value === 'object') {
     if (isPlainObject(value)) {
-      if (has(refs, value)) {
+      if (refs.includes(value)) {
         try {
-          str += circular()
+          result += circular()
         } catch (err) {
           handleError(err)
         }
       } else {
-        str += object(value, options)
+        result += object(value, options)
       }
     } else {
-      handleError(new Error('err:plain:' + JSON.stringify(trail)))
+      handleError(new Error(`err:plain:${JSON.stringify(trail)}`))
     }
   } else if (typeof value === 'number') {
-    str += outerIndent()
     if (isNaN(value)) {
-      str += notANumber()
+      result += notANumber()
     } else {
       if (value === Infinity) {
-        str += 'INF'
+        result += 'INF'
       } else if (value === -Infinity) {
-        str += '-INF'
+        result += '-INF'
       } else {
-        str += String(value)
+        result += String(value)
       }
     }
   } else if (typeof value === 'boolean') {
-    str += outerIndent()
-    str += String(value)
+    result += String(value)
   } else if (typeof value === 'string') {
-    str += outerIndent()
-    str += stringify(value)
+    result += stringify(value)
   } else {
-    handleError(new Error('err:type:' + JSON.stringify(trail)))
+    handleError(new Error(`err:type:${JSON.stringify(trail)}`))
   }
 
-  return str
+  return result
 }

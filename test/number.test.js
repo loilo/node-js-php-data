@@ -1,4 +1,4 @@
-const convert = require('../dist/cjs')
+const convert = require('../dist/js-php-data')
 
 test('converts `5` to `5`', () => {
   expect(convert(5)).toBe('5')
@@ -14,6 +14,10 @@ test('converts `-15` to `-15`', () => {
 
 test('converts `NaN` to `null`', () => {
   expect(convert(NaN, { onNaN: 'null' })).toBe('null')
+})
+
+test('converts `Infinity` to `INF`', () => {
+  expect(convert(Infinity)).toBe('INF')
 })
 
 test('converts `-Infinity` to `-INF`', () => {

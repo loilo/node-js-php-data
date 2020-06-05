@@ -1,114 +1,112 @@
-const convert = require('../dist/cjs')
+const convert = require('../dist/js-php-data')
 
-test('respects `castToObject: true`', () => {
+test('respects `castToObject`', () => {
+  expect(convert({ a: true })).toBe(`[
+    'a' => true
+]`)
+
+  expect(convert({ a: true }, { castToObject: false })).toBe(`[
+    'a' => true
+]`)
+  expect(convert({ a: { b: true } }, { castToObject: false })).toBe(`[
+    'a' => [
+        'b' => true
+    ]
+]`)
+
   expect(convert({ a: true }, { castToObject: true })).toBe(`(object) [
-  'a' => true
+    'a' => true
 ]`)
-})
-
-test('inherits `castToObject: true`', () => {
   expect(convert({ a: { b: true } }, { castToObject: true })).toBe(`(object) [
-  'a' => (object) [
-    'b' => true
-  ]
+    'a' => (object) [
+        'b' => true
+    ]
 ]`)
 })
 
-test('respects `bracketArrays: false`', () => {
+test('respects `bracketArrays`', () => {
+  expect(convert([])).toBe(`[]`)
+  expect(convert([], { bracketArrays: true })).toBe(`[]`)
   expect(convert([], { bracketArrays: false })).toBe(`array()`)
-  expect(convert({}, { bracketArrays: false })).toBe(`array()`)
 })
 
-test('respects `indentation: 3`', () => {
-  expect(convert([ 1, 2, 3 ], { indentation: 3 })).toBe(`[
-   1,
-   2,
-   3
+test('respects `indentation`', () => {
+  expect(convert({ a: true })).toBe(`[
+    'a' => true
+]`)
+  expect(convert({ a: true }, { indentation: 3 })).toBe(`[
+   'a' => true
+]`)
+  expect(convert({ a: 1, b: 2, c: 3 }, { indentation: 'tab' })).toBe(`[
+\t'a' => 1,
+\t'b' => 2,
+\t'c' => 3
 ]`)
 })
 
-test('respects `indentation: "tab"`', () => {
-  expect(convert([ 1, 2, 3 ], { indentation: 'tab' })).toBe(`[
-\t1,
-\t2,
-\t3
+test('respects `trailingCommas`', () => {
+  expect(convert([1])).toBe(`[1]`)
+  expect(convert([1], { trailingCommas: true })).toBe(`[1]`)
+  expect(convert({ a: 1 })).toBe(`[
+    'a' => 1
+]`)
+  expect(convert({ a: 1 }, { trailingCommas: false })).toBe(`[
+    'a' => 1
+]`)
+  expect(convert({ a: 1 }, { trailingCommas: true })).toBe(`[
+    'a' => 1,
 ]`)
 })
 
-test('respects `startingIndentationLevel: 1`', () => {
-  expect(convert([ 1, 2, 3 ], { startingIndentationLevel: 1 })).toBe(`  [
-    1,
-    2,
-    3
-  ]`)
-})
-
-test('respects `startingIndentationLevel: 1` combined with `indentation: 1`', () => {
-  expect(convert([ 1, 2, 3 ], { startingIndentationLevel: 1, indentation: 1 })).toBe(` [
-  1,
-  2,
-  3
- ]`)
-})
-
-test('respects `quotes: "double"`', () => {
+test('respects `quotes`', () => {
+  expect(convert('foo')).toBe(`'foo'`)
   expect(convert('foo', { quotes: 'double' })).toBe(`"foo"`)
+  expect(convert('foo', { quotes: 'single' })).toBe(`'foo'`)
 })
 
-test('escapes `quotes: "double"`', () => {
+test('escapes quotes`', () => {
   expect(convert('f"oo', { quotes: 'double' })).toBe(`"f\\"oo"`)
+  expect(convert("f'oo", { quotes: 'single' })).toBe(`'f\\'oo'`)
 })
 
-test('respects `removeUndefinedProperties: false`', () => {
-  expect(convert({ a: undefined }, { removeUndefinedProperties: false })).toBe(`[
-  'a' => null
+test('respects `removeUndefinedProperties`', () => {
+  expect(convert({ a: undefined })).toBe(`[]`)
+  expect(convert({ a: undefined }, { removeUndefinedProperties: true })).toBe(
+    `[]`
+  )
+  expect(convert({ a: undefined }, { removeUndefinedProperties: false }))
+    .toBe(`[
+    'a' => null
 ]`)
 })
 
-const a = {}
-a.a = a
+test('respects `onCircular`', () => {
+  const a = {}
+  a.a = a
 
-test('respects `onCircular: "null"`', () => {
-  expect(convert(a, { onCircular: 'null' })).toBe(`[
-  'a' => null
+  expect(convert(a)).toBe(`[
+    'a' => null /* CIRCULAR */
 ]`)
-})
-
-test('respects `onCircular: "nullWithComment"`', () => {
   expect(convert(a, { onCircular: 'nullWithComment' })).toBe(`[
-  'a' => null /* CIRCULAR */
+    'a' => null /* CIRCULAR */
 ]`)
-})
-
-
-test('respects `onCircular: "string"`', () => {
+  expect(convert(a, { onCircular: 'null' })).toBe(`[
+    'a' => null
+]`)
   expect(convert(a, { onCircular: 'string' })).toBe(`[
-  'a' => '::CIRCULAR::'
+    'a' => '::CIRCULAR::'
 ]`)
-})
-
-test('respects `onCircular: "throw"`', () => {
   expect(() => {
     convert(a, { onCircular: 'throw' })
   }).toThrow()
 })
 
-const notANumber = NaN
-
-test('respects `onNaN: "null"`', () => {
-  expect(convert(notANumber, { onNaN: 'null' })).toBe(`null`)
-})
-
-test('respects `onNaN: "nullWithComment"`', () => {
-  expect(convert(notANumber, { onNaN: 'nullWithComment' })).toBe(`null /* NaN */`)
-})
-
-test('respects `onNaN: "string"`', () => {
-  expect(convert(notANumber, { onNaN: 'string' })).toBe(`'::NaN::'`)
-})
-
-test('respects `onNaN: "throw"`', () => {
+test('respects `onNaN`', () => {
+  expect(convert(NaN)).toBe(`null /* NaN */`)
+  expect(convert(NaN, { onNaN: 'nullWithComment' })).toBe(`null /* NaN */`)
+  expect(convert(NaN, { onNaN: 'null' })).toBe(`null`)
+  expect(convert(NaN, { onNaN: 'string' })).toBe(`'::NaN::'`)
   expect(() => {
-    convert(notANumber, { onNaN: 'throw' })
+    convert(NaN, { onNaN: 'throw' })
   }).toThrow()
 })

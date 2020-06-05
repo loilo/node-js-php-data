@@ -1,4 +1,4 @@
-const convert = require('../dist/cjs')
+const convert = require('../dist/js-php-data')
 
 test('converts `null` to `null`', () => {
   expect(convert(null)).toBe('null')
