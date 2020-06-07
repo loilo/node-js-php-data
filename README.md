@@ -109,16 +109,6 @@ By how many spaces arrays should be indented. If set to `"tab"`, one tab will be
 
 ---
 
-### `startingIndentationLevel`
-
-**Type:** int
-
-**Default:** `0`
-
-Puts extra indentation before all output code. Indentation width is determined by multiplying this option with the given `indentation`.
-
----
-
 ### `quotes`
 
 **Type:** `"single"|"double"`
