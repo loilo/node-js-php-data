@@ -378,6 +378,7 @@ label code {
   padding: 0;
   border: none;
   width: 39px;
+  z-index: 1;
 
   // From .cm-s-cssedit .CodeMirror-gutters
   @include light {
