@@ -55,6 +55,7 @@
     "style-loader": "^1.2.1",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
+    "webpack-git-hash": "^1.0.2",
     "webpack-pwa-manifest": "^4.2.0",
     "workerize-loader": "^1.2.1"
   }
