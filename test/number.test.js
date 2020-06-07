@@ -12,8 +12,8 @@ test('converts `-15` to `-15`', () => {
   expect(convert(-15)).toBe('-15')
 })
 
-test('converts `NaN` to `null`', () => {
-  expect(convert(NaN, { onNaN: 'null' })).toBe('null')
+test('converts `NaN` to `NAN`', () => {
+  expect(convert(NaN)).toBe('NAN')
 })
 
 test('converts `Infinity` to `INF`', () => {

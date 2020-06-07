@@ -100,13 +100,3 @@ test('respects `onCircular`', () => {
     convert(a, { onCircular: 'throw' })
   }).toThrow()
 })
-
-test('respects `onNaN`', () => {
-  expect(convert(NaN)).toBe(`null /* NaN */`)
-  expect(convert(NaN, { onNaN: 'nullWithComment' })).toBe(`null /* NaN */`)
-  expect(convert(NaN, { onNaN: 'null' })).toBe(`null`)
-  expect(convert(NaN, { onNaN: 'string' })).toBe(`'::NaN::'`)
-  expect(() => {
-    convert(NaN, { onNaN: 'throw' })
-  }).toThrow()
-})

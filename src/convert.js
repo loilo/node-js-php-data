@@ -13,13 +13,21 @@ export default function internalConvert(
   } = options
 
   function stringify(value, delimiter = quotes === 'single' ? "'" : '"') {
-    return (
-      delimiter +
-      value
-        .replace(/\\/g, '\\\\')
-        .replace(new RegExp(escapeRegex(delimiter), 'g'), `\\${delimiter}`) +
-      delimiter
-    )
+    if (value.includes('\n')) {
+      delimiter = '"'
+    }
+
+    let sanitizedValue = value
+      .replace(/\\/g, '\\\\')
+      .replace(new RegExp(escapeRegex(delimiter), 'g'), `\\${delimiter}`)
+
+    if (delimiter === '"') {
+      sanitizedValue = sanitizedValue
+        .replace(/\$/g, '\\$')
+        .replace(/\n/g, '\\n')
+    }
+
+    return delimiter + sanitizedValue + delimiter
   }
 
   function circular() {
@@ -162,7 +170,7 @@ export default function internalConvert(
     }
   } else if (value == null) {
     result += 'null'
-  } else if (typeof value === 'object' && value !== null) {
+  } else if (typeof value === 'object') {
     if (isPlainObject(value)) {
       if (refs.includes(value)) {
         try {
