@@ -1,0 +1,9 @@
+{
+  "name": "JS to PHP data",
+  "short_name": "JS to PHP data",
+  "description": "Convert JavaScript data structures to PHP.",
+  "lang": "en",
+  "display": "fullscreen",
+  "background_color": "#2f3035",
+  "theme_color": "#2f3035"
+}

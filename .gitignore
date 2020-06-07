@@ -163,3 +163,5 @@ $RECYCLE.BIN/
 
 /.vscode
 /dist
+/demo/dist
+/.cache

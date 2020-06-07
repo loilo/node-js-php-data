@@ -1,0 +1,7 @@
+@import '~codemirror/lib/codemirror.css';
+@import 'theme-material-darker.css';
+@import 'theme-cssedit.css';
+
+.CodeMirror {
+  height: 100%;
+}

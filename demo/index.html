@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html data-theme="auto">
+  <head>
+    <script>
+      // Set theme as early as possible
+      if (window.localStorage.getItem('theme')) {
+        document.documentElement.dataset.theme = window.localStorage.getItem(
+          'theme'
+        )
+      }
+
+      // Use correct height for mobile devices
+      const adjustVh = () =>
+        document.documentElement.style.setProperty(
+          '--vh',
+          `${window.innerHeight * 0.01}px`
+        )
+      adjustVh()
+      window.addEventListener('resize', adjustVh)
+    </script>
+    <title>PHP to JS data converter</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="options">
+        <span id="switch-theme-container">
+          <button type="button" class="option-button" id="switch-theme">
+            <!-- Auto -->
+            <!-- prettier-ignore -->
+            <svg id="theme-auto" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6z"/></svg>
+
+            <!-- Dark -->
+            <!-- prettier-ignore -->
+            <svg id="theme-dark" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="M10 2c-1.82 0-3.53.5-5 1.35C7.99 5.08 10 8.3 10 12s-2.01 6.92-5 8.65C6.47 21.5 8.18 22 10 22c5.52 0 10-4.48 10-10S15.52 2 10 2z"/></svg>
+
+            <!-- Light -->
+            <!-- prettier-ignore -->
+            <svg id="theme-light" xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/></svg>
+          </button>
+        </span>
+        <span
+          ><input
+            type="checkbox"
+            id="typecast-objects"
+            class="option-ui"
+            data-option="castToObject"
+          /><label for="typecast-objects">Type cast objects</label></span
+        >
+        <span
+          ><input
+            type="checkbox"
+            id="bracket-arrays"
+            class="option-ui"
+            data-option="bracketArrays"
+            checked
+          /><label for="bracket-arrays">Bracket array syntax</label></span
+        >
+        <span
+          ><input
+            type="checkbox"
+            id="trailing-commas"
+            class="option-ui"
+            data-option="trailingCommas"
+          /><label for="trailing-commas">Trailing commas</label></span
+        >
+        <span
+          ><select id="indentation" class="option-ui" data-option="indentation">
+            <option value="tab">Tab</option>
+            <option value="1">1 Space</option>
+            <option value="2">2 Spaces</option>
+            <option value="3">3 Spaces</option>
+            <option value="4" selected>4 Spaces</option>
+            <option value="5">5 Spaces</option>
+            <option value="6">6 Spaces</option>
+            <option value="7">7 Spaces</option>
+            <option value="8">8 Spaces</option> </select
+          ><label
+            for="indentation"
+            data-tpl='{
+  "tab": "Indent by Tab",
+  "1": "Indent by 1 space",
+  "2": "Indent by 2 spaces",
+  "3": "Indent by 3 spaces",
+  "4": "Indent by 4 spaces",
+  "5": "Indent by 5 spaces",
+  "6": "Indent by 6 spaces",
+  "7": "Indent by 7 spaces",
+  "8": "Indent by 8 spaces"
+}'
+          ></label
+        ></span>
+        <span
+          ><select id="quotes" class="option-ui" data-option="quotes">
+            <option value="single" selected>Single</option>
+            <option value="double">Double</option> </select
+          ><label
+            for="quotes"
+            data-tpl='{
+  "single": "Use single quotes",
+  "double": "Use double quotes"
+}'
+          ></label
+        ></span>
+        <span
+          ><input
+            type="checkbox"
+            id="remove-undefined"
+            class="option-ui"
+            data-option="removeUndefinedProperties"
+            checked
+          /><label for="remove-undefined"
+            >Remove <code>undefined</code> properties</label
+          ></span
+        >
+        <span
+          ><select id="on-circular" class="option-ui" data-option="onCircular">
+            <option value="null">Replace with null</option>
+            <option value="nullWithComment" selected
+              >Replace with null + comment</option
+            >
+            <option value="string">Replace with string</option>
+            <option value="throw">Throw an Error</option> </select
+          ><label
+            for="on-circular"
+            data-tpl='{
+  "null": "Replace circular references with &lt;code&gt;null&lt;/code&gt;",
+  "nullWithComment": "Replace circular references with &lt;code&gt;null&lt;/code&gt; + comment",
+  "string": "Replace circular references with a string",
+  "throw": "Throw on circular references"
+}'
+          ></label
+        ></span>
+        <span
+          ><select id="on-nan" class="option-ui" data-option="onNaN">
+            <option value="null">Replace with null</option>
+            <option value="nullWithComment" selected
+              >Replace with null + comment</option
+            >
+            <option value="string">Replace with string</option>
+            <option value="throw">Throw an Error</option> </select
+          ><label
+            for="on-nan"
+            data-tpl='{
+  "null": "Replace NaN with &lt;code&gt;null&lt;/code&gt;",
+  "nullWithComment": "Replace NaN with &lt;code&gt;null&lt;/code&gt; + comment",
+  "string": "Replace NaN with a string",
+  "throw": "Throw on NaN"
+}'
+          ></label
+        ></span>
+        <span class="show-all"><button class="seamless">More</button></span>
+      </div>
+      <div class="input">
+        <textarea class="input" id="input">
+// Return whatever JS you want to be converted to PHP
+
+return null</textarea
+        >
+      </div>
+      <hr class="output-gutter" />
+      <div class="output">
+        <textarea class="output" id="output">null</textarea>
+      </div>
+      <ul class="msg"></ul>
+    </div>
+  </body>
+</html>
