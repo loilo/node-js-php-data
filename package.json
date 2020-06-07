@@ -11,7 +11,9 @@
     "pretest": "run-s build",
     "test": "eslint src test && jest",
     "prepublishOnly": "run-s build",
-    "build": "del dist && microbundle --format modern,cjs,umd --name jsPhpData"
+    "build": "del dist && microbundle --format modern,cjs,umd --name jsPhpData",
+    "demo:webpack": "webpack --mode=production",
+    "demo:build": "run-s build demo:webpack"
   },
   "repository": {
     "type": "git",
