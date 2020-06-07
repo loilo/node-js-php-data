@@ -111,7 +111,7 @@ body {
 .wrapper {
   height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr 1fr max-content;
+  grid-template-rows: max-content 1fr 1fr max-content;
   grid-template-columns: 39px 1fr;
   grid-template-areas:
     'header header'
@@ -120,7 +120,7 @@ body {
     'footer footer';
 
   @media (min-width: 1024px) {
-    grid-template-rows: auto 1fr max-content;
+    grid-template-rows: max-content 1fr max-content;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
       'header header'
@@ -359,10 +359,12 @@ label code {
 .input {
   z-index: 10;
   grid-area: input;
+  min-height: 0;
 }
 
 .output {
   grid-area: output;
+  min-height: 0;
 }
 
 .output-gutter {
