@@ -1,0 +1,1 @@
+self.webpackChunk([0],{8:function(n,t,u){"use strict";u.r(t),u.d(t,"prefix",(function(){return c})),u.d(t,"suffix",(function(){return f}));const c="(async function input() {\n",f="\n})()"}});
