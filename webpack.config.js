@@ -19,6 +19,12 @@ const cssLoaders = [
   'css-loader'
 ]
 
+let publicPath = process.env.PUBLIC_PATH || '/'
+
+if (!publicPath.endsWith('/')) {
+  publicPath += '/'
+}
+
 module.exports = {
   entry: {
     script: './demo/script.js',
@@ -28,7 +34,7 @@ module.exports = {
   output: {
     path: resolve('demo', 'dist'),
     globalObject: 'self',
-    publicPath: process.env.PUBLIC_PATH || '/',
+    publicPath,
     filename: '[name].[contenthash].js'
   },
   plugins: [
