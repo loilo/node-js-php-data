@@ -9,8 +9,7 @@ export default function internalConvert(
     castToObject = false,
     quotes = 'single',
     removeUndefinedProperties = true,
-    onCircular = 'nullWithComment',
-    onNaN = 'nullWithComment'
+    onCircular = 'nullWithComment'
   } = options
 
   function stringify(value, delimiter = quotes === 'single' ? "'" : '"') {
@@ -33,19 +32,6 @@ export default function internalConvert(
         return stringify('::CIRCULAR::')
       case 'throw':
         handleError(new Error(`err:circular:${JSON.stringify(trail)}`))
-    }
-  }
-
-  function notANumber() {
-    switch (onNaN) {
-      case 'null':
-        return 'null'
-      case 'nullWithComment':
-        return 'null /* NaN */'
-      case 'string':
-        return stringify('::NaN::')
-      case 'throw':
-        handleError(new Error(`err:NaN:${JSON.stringify(trail)}`))
     }
   }
 
@@ -192,7 +178,7 @@ export default function internalConvert(
     }
   } else if (typeof value === 'number') {
     if (isNaN(value)) {
-      result += notANumber()
+      result += 'NAN'
     } else {
       if (value === Infinity) {
         result += 'INF'

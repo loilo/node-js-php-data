@@ -156,19 +156,6 @@ How to handle circular references.
 
 ---
 
-### `onNaN`
-
-**Type:** `"null"|"nullWithComment"|"string"|"throw"`
-
-**Default:** `"nullWithComment"`
-
-How to handle circular references.
-
-- `"null"`: replace them with `null`
-- `"nullWithComment"`: replace them with `null` and a adjoining `/* NaN */` comment
-- `"string"`: replace them with `"::NaN::"`
-- `"throw"`: Throw an error
-
 ## Known limitations
 
 This tool is about converting plain structures. Resolving circular dependencies or converting objects with prototypes is not supported on purpose.

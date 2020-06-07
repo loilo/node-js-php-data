@@ -11,8 +11,7 @@ export default function convert(
     trailingCommas = false,
     quotes = 'single',
     removeUndefinedProperties = true,
-    onCircular = 'nullWithComment',
-    onNaN = 'nullWithComment'
+    onCircular = 'nullWithComment'
   } = {}
 ) {
   if (
@@ -31,18 +30,12 @@ export default function convert(
       '`onCircular` must be either "null", "nullWithComment", "string" or "throw"'
     )
   }
-  if (!unconvertableOptions.includes(onNaN)) {
-    throw new Error(
-      '`onNaN` must be either "null", "nullWithComment", "string" or "throw"'
-    )
-  }
 
   const rawResult = internalConvert(value, {
     castToObject,
     quotes,
     removeUndefinedProperties,
-    onCircular,
-    onNaN
+    onCircular
   })
 
   const formattedResult = prettier.format(`<?php return ${rawResult};`, {
