@@ -28,7 +28,7 @@ module.exports = {
     path: resolve('demo', 'dist'),
     globalObject: 'self',
     publicPath: process.env.PUBLIC_PATH || '/',
-    filename: '[name].[contenthash].js'
+    filename: '[name].[hash].js'
   },
   plugins: [
     new MiniCssExtractPlugin({
