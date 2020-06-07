@@ -1,14 +1,22 @@
 import * as OfflinePluginRuntime from 'offline-plugin/runtime'
 OfflinePluginRuntime.install()
 
-import Converter from 'workerize-loader!./worker'
 import CodeMirror from 'codemirror'
 import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/clike/clike'
 import 'codemirror/mode/php/php'
 import 'codemirror/mode/javascript/javascript'
+import { prefix, suffix } from './wrap'
 
-const worker = Converter()
+const worker = new Worker('./worker', { type: 'module' })
+
+const uuid = () =>
+  ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  )
 
 function debounce(callback, wait, context = this) {
   let timeout = null
@@ -158,6 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   manageOptions()
 
+  // Number of lines prefixed in wrapped, evaluated code
+  // (must be discounted when printing error messages)
+  const prefixOffsetLines = prefix.match(/\n/g).length
+  const suffixLeadingWhitespace = suffix.match(/^\s*/)
+
+  // Line number offset where an "unexpected token }" error happens
+  const suffixOffsetLines = suffixLeadingWhitespace
+    ? suffixLeadingWhitespace[0].match(/\n/g).length
+    : 0
+
   async function rewrite() {
     const code = inputEditor.getValue()
 
@@ -173,23 +191,41 @@ document.addEventListener('DOMContentLoaded', () => {
       updateLabel(el)
     }
 
-    try {
-      const result = await worker.convert(code, options)
-      outputEditor.setValue(result)
-    } catch (rawErrorJson) {
-      const rawError = JSON.parse(rawErrorJson.message)
+    const sentId = uuid()
+    worker.postMessage({ code, options, id: sentId })
 
+    const { type, ...result } = await new Promise(resolve => {
+      /**
+       * @param {MessageEvent} event
+       */
+      const workerListener = event => {
+        const { id, ...data } = event.data
+        if (id === sentId) {
+          worker.removeEventListener('message', workerListener)
+          resolve(data)
+        }
+      }
+
+      worker.addEventListener('message', workerListener)
+    })
+
+    if (type === 'result') {
+      outputEditor.setValue(result.code)
+    } else {
       const error = {
-        ...rawError,
-        toString: () => String(rawError.message)
+        ...result,
+        toString: () => String(result.message)
       }
 
       if (typeof error.index !== 'undefined') {
         const nrOfLines = inputEditor.lineCount()
+
         if (
-          error.message.match(
-            new RegExp(`^Line ${nrOfLines + 2}: Unexpected token`)
-          )
+          new RegExp(
+            `^Line ${
+              nrOfLines + prefixOffsetLines + suffixOffsetLines
+            }: Unexpected token`
+          ).test(error.message)
         ) {
           msg.innerHTML = `<li>Unexpected end of input</li>`
 
@@ -204,10 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           msg.innerHTML = `<li>${error.message.replace(
             /^Line ([0-9]+):/,
-            (match, lineNr) => `Line ${lineNr - 1}:`
+            (_, lineNr) => `Line ${lineNr - prefixOffsetLines}:`
           )}</li>`
 
-          const { line, ch } = inputEditor.posFromIndex(error.index - 20)
+          const { line, ch } = inputEditor.posFromIndex(
+            error.index - prefix.length
+          )
 
           marker = inputEditor.markText(
             { line, ch },
@@ -276,21 +314,18 @@ document.addEventListener('DOMContentLoaded', () => {
     resetForceView()
   })
 
-  inputEditor.on(
-    'change',
-    debounce(() => {
-      if (val === inputEditor.getValue()) return
+  inputEditor.on('change', () => {
+    if (val === inputEditor.getValue()) return
 
-      msg.innerHTML = ''
-      if (marker) {
-        marker.clear()
-        marker = null
-      }
-      val = inputEditor.getValue()
+    msg.innerHTML = ''
+    if (marker) {
+      marker.clear()
+      marker = null
+    }
+    val = inputEditor.getValue()
 
-      rewrite()
-    }, 200)
-  )
+    rewrite()
+  })
 
   themeSwitcher.onclick = () => {
     switch (document.documentElement.dataset.theme) {

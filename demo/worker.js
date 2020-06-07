@@ -1,17 +1,22 @@
 import * as esprima from 'esprima'
+import { prefix, suffix } from './wrap.js'
 
 self.window = self
 const jsPhpData = require('../src/index.js').default
 
-export async function convert(code, options) {
-  const wrappedCode = `(async function input() {\n${code}\n})()`
+onmessage = async event => {
+  const { code, options, id } = event.data
+
+  const wrappedCode = prefix + code + suffix
 
   try {
-    esprima.parseScript(wrappedCode)
+    esprima.parse(wrappedCode)
 
     const result = await eval(wrappedCode)
-    return jsPhpData(result, options)
+    const resultCode = jsPhpData(result, options)
+
+    postMessage({ type: 'result', id, code: resultCode })
   } catch (error) {
-    throw JSON.stringify({ ...error, message: error.message })
+    postMessage({ type: 'error', id, ...error, message: error.message })
   }
 }

@@ -95,7 +95,7 @@ export default function internalConvert(
     )
   }
 
-  function object(value) {
+  function printObject(value) {
     let result = ''
 
     if (castToObject) result += '(object) '
@@ -103,6 +103,7 @@ export default function internalConvert(
     result += '['
 
     let items = Object.entries(value)
+    refs = refs.concat(value)
 
     if (removeUndefinedProperties) {
       items = items.filter(([key, value]) => typeof value !== 'undefined')
@@ -117,7 +118,7 @@ export default function internalConvert(
           value,
           { ...options },
           {
-            refs: refs.concat(value),
+            refs,
             trail: trail.concat(key)
           }
         )
@@ -132,11 +133,13 @@ export default function internalConvert(
     return result
   }
 
-  function array(value) {
+  function printArray(value) {
     let result = ''
 
     result += '['
     if (value.length > 0) result += '\n'
+
+    refs = refs.concat([value])
 
     for (let i = 0; i < value.length; i++) {
       let convertedValue
@@ -145,7 +148,7 @@ export default function internalConvert(
           value[i],
           { ...options },
           {
-            refs: refs.concat([value]),
+            refs,
             trail: trail.concat(i)
           }
         )
@@ -169,11 +172,11 @@ export default function internalConvert(
         return handleError(err)
       }
     } else {
-      result += array(value, options)
+      result += printArray(value, options)
     }
   } else if (value == null) {
     result += 'null'
-  } else if (typeof value === 'object') {
+  } else if (typeof value === 'object' && value !== null) {
     if (isPlainObject(value)) {
       if (refs.includes(value)) {
         try {
@@ -182,7 +185,7 @@ export default function internalConvert(
           handleError(err)
         }
       } else {
-        result += object(value, options)
+        result += printObject(value, options)
       }
     } else {
       handleError(new Error(`err:plain:${JSON.stringify(trail)}`))

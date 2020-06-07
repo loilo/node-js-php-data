@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const WebpackGitHash = require('webpack-git-hash')
+const WorkerPlugin = require('worker-plugin')
 const OfflinePlugin = require('offline-plugin')
 
 const prettierPath = require.resolve('prettier/standalone')
@@ -29,14 +29,14 @@ module.exports = {
     path: resolve('demo', 'dist'),
     globalObject: 'self',
     publicPath: process.env.PUBLIC_PATH || '/',
-    filename: '[name].[githash].js'
+    filename: '[name].[contenthash].js'
   },
   plugins: [
-    new WebpackGitHash(),
     new MiniCssExtractPlugin({
-      filename: '[name].[githash].css'
+      filename: '[name].[contenthash].css'
     }),
     new NormalModuleReplacementPlugin(/^prettier$/, prettierPath),
+    new WorkerPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: 'demo/index.html',
