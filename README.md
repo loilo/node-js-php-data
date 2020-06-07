@@ -9,7 +9,7 @@
 
 ## Why?
 
-For a PHP/JS developer, it's quite common having to convert JavaScript (or even JSON) data into a PHP array. This is tedious to do manually and I wanted a copy&paste solution.
+For a PHP-oriented full stack developer, it's quite common having to convert JavaScript (or even JSON) data into a PHP array. This is tedious to do manually and I wanted a copy&paste solution.
 
 Therefore, the actual purpose of this package is its online demo, the package is merely a byproduct.
 
@@ -31,19 +31,13 @@ const jsPhpData = require('js-php-data')
 
 ### Use in the Browser
 
-You can use this package in your browser with one of the following snippets:
+You can use this package in your browser. It is compiled to ES5, so it runs in all major browsers down to IE 11.
 
-- Compiled to ES5, runs in all major browsers down to IE 11 (exposes a global function `jsPhpData`):
+This build exposes a global `jsPhpData` function and relies on the `prettier` and `prettierPlugins.php` globals to already be loaded:
 
-  ```html
-  <script src="https://unpkg.com/js-php-data/dist/js-php-data.umd.js"></script>
-  ```
-
-- As an ES module, for modern browsers:
-
-  ```javascript
-  import jsPhpData from 'https://unpkg.com/js-php-data'
-  ```
+```html
+<script src="https://unpkg.com/js-php-data/dist/js-php-data.umd.js"></script>
+```
 
 ## Usage
 
