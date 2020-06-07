@@ -6,17 +6,13 @@ import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/clike/clike'
 import 'codemirror/mode/php/php'
 import 'codemirror/mode/javascript/javascript'
+import Converter from 'workerize-loader!./convert.worker'
+import * as urlState from './url-state'
 import { prefix, suffix } from './wrap'
 
-const worker = new Worker('./worker', { type: 'module' })
+const worker = Converter()
 
-const uuid = () =>
-  ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (
-      c ^
-      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16)
-  )
+let initialized = false
 
 function debounce(callback, wait, context = this) {
   let timeout = null
@@ -176,7 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ? suffixLeadingWhitespace[0].match(/\n/g).length
     : 0
 
-  async function rewrite() {
+  async function rewrite(shouldSave = true) {
+    if (!initialized) return
+
     const code = inputEditor.getValue()
 
     const options = {}
@@ -191,30 +189,18 @@ document.addEventListener('DOMContentLoaded', () => {
       updateLabel(el)
     }
 
-    const sentId = uuid()
-    worker.postMessage({ code, options, id: sentId })
+    if (shouldSave) {
+      save()
+    }
 
-    const { type, ...result } = await new Promise(resolve => {
-      /**
-       * @param {MessageEvent} event
-       */
-      const workerListener = event => {
-        const { id, ...data } = event.data
-        if (id === sentId) {
-          worker.removeEventListener('message', workerListener)
-          resolve(data)
-        }
-      }
-
-      worker.addEventListener('message', workerListener)
-    })
-
-    if (type === 'result') {
-      outputEditor.setValue(result.code)
-    } else {
+    try {
+      const result = await worker.convert(code, options)
+      outputEditor.setValue(result)
+    } catch (rawErrorJson) {
+      const rawError = JSON.parse(rawErrorJson.message)
       const error = {
-        ...result,
-        toString: () => String(result.message)
+        ...rawError,
+        toString: () => String(rawError.message)
       }
 
       if (typeof error.index !== 'undefined') {
@@ -314,18 +300,21 @@ document.addEventListener('DOMContentLoaded', () => {
     resetForceView()
   })
 
-  inputEditor.on('change', () => {
-    if (val === inputEditor.getValue()) return
+  inputEditor.on(
+    'change',
+    debounce(() => {
+      if (val === inputEditor.getValue()) return
 
-    msg.innerHTML = ''
-    if (marker) {
-      marker.clear()
-      marker = null
-    }
-    val = inputEditor.getValue()
+      msg.innerHTML = ''
+      if (marker) {
+        marker.clear()
+        marker = null
+      }
+      val = inputEditor.getValue()
 
-    rewrite()
-  })
+      rewrite()
+    }, 50)
+  )
 
   themeSwitcher.onclick = () => {
     switch (document.documentElement.dataset.theme) {
@@ -350,8 +339,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
   matchMedia('(prefers-color-scheme: dark)').addListener(updateTheme)
 
-  setTimeout(() => {
-    inputEditor.refresh()
-    outputEditor.refresh()
-  }, 400)
+  function restoreOptions(options) {
+    for (const [id, value] of Object.entries(options)) {
+      const element = document.getElementById(id)
+      if (typeof value === 'boolean') {
+        element.checked = value
+      } else {
+        element.value = value
+      }
+      element.dispatchEvent(new Event('change'))
+    }
+  }
+
+  async function load() {
+    const state = await urlState.read()
+
+    if (state === null) {
+      return
+    }
+
+    restoreOptions(state.options)
+    inputEditor.setValue(state.input)
+  }
+
+  function save() {
+    return urlState.write({
+      input: inputEditor.getValue(),
+      options: Object.fromEntries(
+        [
+          'typecast-objects',
+          'bracket-arrays',
+          'trailing-commas',
+          'indentation',
+          'quotes',
+          'remove-undefined',
+          'on-circular'
+        ].map(id => {
+          const element = document.getElementById(id)
+          if (element.type === 'checkbox') {
+            return [id, element.checked]
+          } else {
+            return [id, element.value]
+          }
+        })
+      )
+    })
+  }
+
+  load().then(() => {
+    initialized = true
+    rewrite(false)
+  })
 })

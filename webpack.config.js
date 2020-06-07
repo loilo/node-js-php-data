@@ -4,7 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const WebpackPwaManifest = require('webpack-pwa-manifest')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const WorkerPlugin = require('worker-plugin')
 const OfflinePlugin = require('offline-plugin')
 
 const prettierPath = require.resolve('prettier/standalone')
@@ -27,9 +26,9 @@ if (!publicPath.endsWith('/')) {
 
 module.exports = {
   entry: {
-    script: './demo/script.js',
-    styles: './demo/stylesheet.scss',
-    editor: './demo/editor.css'
+    script: './demo/js/script.js',
+    styles: './demo/css/stylesheet.scss',
+    editor: './demo/css/editor.css'
   },
   output: {
     path: resolve('demo', 'dist'),
@@ -42,7 +41,6 @@ module.exports = {
       filename: '[name].[contenthash].css'
     }),
     new NormalModuleReplacementPlugin(/^prettier$/, prettierPath),
-    new WorkerPlugin(),
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: 'demo/index.html',
