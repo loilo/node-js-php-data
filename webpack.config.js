@@ -38,7 +38,8 @@ module.exports = {
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: 'demo/index.html',
-      scriptLoading: 'defer'
+      scriptLoading: 'defer',
+      favicon: 'demo/icons/favicon.svg'
     }),
     new WebpackPwaManifest({
       name: 'JS to PHP data',
@@ -46,8 +47,33 @@ module.exports = {
       description: 'Convert JavaScript data structures to PHP.',
       lang: 'en',
       display: 'fullscreen',
-      background_color: '#2f3035',
-      theme_color: '#2f3035',
+      background_color: '#1c202b',
+      theme_color: '#1c202b',
+      icons: [
+        ...[120, 152, 167, 180, 1024].map(size => ({
+          src: resolve(`demo/icons/ios_${size}x${size}.png`),
+          size,
+          destination: 'icons/ios',
+          ios: true
+        })),
+        {
+          src: resolve('demo/icons/ios_1024x1024.png'),
+          size: 1024,
+          destination: 'icons/ios',
+          ios: 'startup'
+        },
+        ...[48, 72, 96, 144, 168, 192, 512].map(size => ({
+          src: resolve(`demo/icons/android_${size}x${size}.png`),
+          size,
+          destination: 'icons/android'
+        })),
+        {
+          src: resolve('demo/icons/maskable.png'),
+          size: '1024x1024',
+          destination: 'icons/android',
+          purpose: 'maskable'
+        }
+      ],
       inject: true
     }),
     new OfflinePlugin()
