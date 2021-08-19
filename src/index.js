@@ -48,5 +48,5 @@ export default function convert(
     singleQuote: quotes === 'single'
   })
 
-  return formattedResult.replace(/^.*\sreturn(.+);\s*$/s, '$1').trim()
+  return formattedResult.replace(/^.*?\sreturn(.+);\s*$/s, '$1').trim()
 }
