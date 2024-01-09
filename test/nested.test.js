@@ -1,4 +1,4 @@
-const convert = require('../dist/js-php-data')
+import convert from '../src/index.js'
 
 test('converts `[ "a", \'b\', { c: 3 } ]` correctly`', () => {
   expect(convert(['a', 'b', { c: 3 }])).toBe(`[

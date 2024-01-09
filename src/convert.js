@@ -1,4 +1,4 @@
-import { isPlainObject, escapeRegex } from './helpers'
+import { isPlainObject, escapeRegex } from './helpers.js'
 
 export default function internalConvert(
   value,

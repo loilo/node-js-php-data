@@ -1,31 +1,23 @@
 @mixin light-theme {
-  --background: #ffffff;
-  --background-shade: #fafafb;
+  --background: #fafbfc;
+  --background-shade: #fafbfc;
   --borders: #e5e5e5;
-  --text: #4a5263;
+  --text: #565869;
   --text-shade: #a8a8a8;
 
   --selected-background: #fafafb;
-  --selected-text: #4a5263;
-
-  --error-background: #fbeef4;
-  --error-text: #9a4668;
-  --error-borders: #f5d7e5;
+  --selected-text: #565869;
 }
 
 @mixin dark-theme {
-  --background: #1f232d;
-  --background-shade: #1c202b;
-  --borders: #2f3035;
+  --background: #222732;
+  --background-shade: #222732;
+  --borders: #161c26;
   --text: #9ba0af;
   --text-shade: #606573;
 
   --selected-background: #38414c;
   --selected-text: #c0c4d0;
-
-  --error-background: #73283c;
-  --error-text: #fff3f6;
-  --error-borders: #92314b;
 }
 
 @mixin light() {
@@ -71,7 +63,7 @@ body {
 body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
     sans-serif, Apple Color Emoji, Segoe UI Emoji;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--text);
   background-color: var(--background);
 }
@@ -91,33 +83,20 @@ body {
   outline: none;
 }
 
-.src-err {
-  box-shadow: 0 0 0 2px var(--error-borders);
-  outline: 1px solid var(--error-background);
-  background: var(--error-background) !important;
-}
 .subtle {
   opacity: 0.4;
-}
-
-.CodeMirror {
-  font-family: 'Roboto Mono', Monaco, Menlo, Consolas, monospace;
-  line-height: 1.6;
-  font-size: 16px;
-  font-weight: 300;
-  height: 100%;
 }
 
 .wrapper {
   height: 100vh;
   display: grid;
   grid-template-rows: max-content 1fr 1fr max-content;
-  grid-template-columns: 39px 1fr;
+  grid-template-columns: 1fr;
   grid-template-areas:
-    'header header'
-    'input input'
-    'output-gutter output'
-    'footer footer';
+    'header'
+    'input'
+    'output'
+    'footer';
 
   @media (min-width: 1024px) {
     grid-template-rows: max-content 1fr max-content;
@@ -288,8 +267,8 @@ body {
   margin-bottom: 0;
   @include themed-background-svg(
     '<svg fill="currentColor" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
-    '92314b',
-    'ff5370'
+    $light-color: 'FF5C56',
+    $dark-color: 'FF3333'
   );
   display: inline-block;
   vertical-align: middle;
@@ -302,8 +281,8 @@ body {
 .options input[type='checkbox']:checked + label::before {
   @include themed-background-svg(
     '<svg fill="currentColor" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"/><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>',
-    '299652',
-    'c3e88d'
+    $light-color: '2DAE58',
+    $dark-color: 'bae67e'
   );
   background-size: 1.25em;
 }
@@ -321,8 +300,8 @@ body {
   box-sizing: content-box;
   @include themed-background-svg(
     '<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7.41 7.84L12 12.42l4.59-4.58L18 9.25l-6 6-6-6z"/><path d="M0-.75h24v24H0z" fill="none"/></svg>',
-    'a8a8a8',
-    '606573'
+    $light-color: 'a8a8a8',
+    $dark-color: '606573'
   );
   background-position: center;
   background-repeat: no-repeat;
@@ -332,14 +311,15 @@ body {
 .show-all.active button {
   @include themed-background-svg(
     '<svg fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/><path d="M0 0h24v24H0z" fill="none"/></svg>',
-    '4a5263',
-    '9ba0af'
+    $light-color: '4a5263',
+    $dark-color: '9ba0af'
   );
 }
 
 code {
-  font-family: 'Roboto Mono';
-  font-weight: 300;
+  font-family: 'JetBrains Mono Variable', 'Fira Code', 'Roboto Mono', Consolas,
+    monospace;
+  font-weight: 350;
   font-size: inherit;
 }
 
@@ -347,7 +327,9 @@ label code {
   background: var(--background-shade);
   padding: 0.1em 0.2em;
   border-radius: 3px;
-  font-family: 'Roboto Mono';
+  font-family: 'JetBrains Mono Variable', 'Fira Code', 'Roboto Mono', Consolas,
+    monospace;
+  font-weight: 350;
   font-size: 0.8em;
 }
 
@@ -356,70 +338,35 @@ label code {
   display: flex;
 }
 
-.input {
+.input:not(#input) {
   z-index: 10;
   grid-area: input;
   min-height: 0;
 }
 
-.output {
+.output:not(#output) {
   grid-area: output;
   min-height: 0;
-}
-
-.output-gutter {
-  grid-area: output-gutter;
-  margin: 0;
-  padding: 0;
-  border: none;
-  width: 39px;
-  z-index: 1;
-
-  // From .cm-s-cssedit .CodeMirror-gutters
-  @include light {
-    background: #fafafb;
-    box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.1);
-    z-index: 3;
-    border: none;
-  }
-
-  // From .cm-s-material-darker .CodeMirror-gutters
-  @include dark {
-    background: #1c202b;
-    color: #606573;
-    border: none;
-    box-shadow: 1px 0 2px 0 rgba(101, 101, 101, 0.1);
-  }
+  border-top: 1px solid var(--borders);
 
   @media (min-width: 1024px) {
-    display: none;
+    border-top: none;
+    border-left: 1px solid var(--borders);
   }
 }
 
 #input,
 #output {
-  opacity: 0;
+  // opacity: 0;
+  height: 100%;
 }
 
-.msg {
-  grid-area: footer;
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  border-top: 1px solid var(--error-borders);
+#output .cm-lineNumbers {
+  visibility: hidden;
 }
 
-.msg:empty {
-  display: none;
-}
-
-.msg li {
-  display: block;
-  padding: 0;
-  margin: 0;
-  background: var(--error-background);
-  color: var(--error-text);
-  padding: 0.7em 1em 0.7em 43px;
+.cm-editor {
+  height: 100%;
 }
 
 .options > span.hidden.force-view {

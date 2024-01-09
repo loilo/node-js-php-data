@@ -1,4 +1,4 @@
-const convert = require('../dist/js-php-data')
+import convert from '../src/index.js'
 
 test('respects `castToObject`', () => {
   expect(convert({ a: true })).toBe(`[

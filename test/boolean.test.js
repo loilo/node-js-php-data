@@ -1,4 +1,4 @@
-const convert = require('../dist/js-php-data')
+import convert from '../src/index.js'
 
 test('converts `true` to `true`', () => {
   expect(convert(true)).toBe('true')

@@ -1,0 +1,12 @@
+root: true
+env:
+  browser: true
+  node: true
+parserOptions:
+  ecmaVersion: 2022
+  sourceType: module
+extends:
+  - prettier
+  - plugin:prettier/recommended
+plugins:
+  - prettier

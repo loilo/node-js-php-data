@@ -1,7 +1,22 @@
 import prettier from 'prettier'
-import phpPlugin from '@prettier/plugin-php'
-import internalConvert from './convert'
+import phpPlugin from '@prettier/plugin-php/standalone.js'
+import internalConvert from './convert.js'
 
+/**
+ * Convert a JavaScript value to PHP code.
+ *
+ * @param {any} value
+ * @param {{
+ *   castToObject?: boolean
+ *   bracketArrays?: boolean
+ *   indentation?: number | 'tab'
+ *   trailingCommas?: boolean
+ *   quotes?: 'single' | 'double'
+ *   removeUndefinedProperties?: boolean
+ *   onCircular?: 'null' | 'nullWithComment' | 'string' | 'throw'
+ * }|undefined} options
+ * @returns {string}
+ */
 export default function convert(
   value,
   {

@@ -1,7 +1,7 @@
 # JS data to PHP converter
 
-[![Test status on Travis](https://badgen.net/travis/loilo/node-js-php-data?label=build)](https://travis-ci.org/loilo/node-js-php-data)
-[![Version on npm](https://badgen.net/npm/v/js-php-data)](https://www.npmjs.com/package/js-php-data)
+[![Test status in GitHub Actions](https://img.shields.io/github/actions/workflow/status/loilo/node-js-php-data/test.yml)](https://github.com/loilo/node-js-php-data/actions/workflows/test.yml)
+[![Version on npm](https://img.shields.io/npm/v/js-php-data)](https://www.npmjs.com/package/js-php-data)
 
 > This package takes a JavaScript expression and converts it into a PHP expression.
 
@@ -23,10 +23,12 @@ npm install js-php-data
 
 ### Use in Node.js
 
-To use this package in Node, you can just `require`:
-
 ```javascript
+// In CommonJS modules
 const jsPhpData = require('js-php-data')
+
+// In module packages
+import jsPhpData from 'js-php-data'
 ```
 
 ### Use in the Browser
@@ -95,7 +97,7 @@ If set to `true`, the last items of all arrays will have a comma appended.
 
 ### `indentation`
 
-**Type:** `int|"tab"`
+**Type:** `number | "tab"`
 
 **Default:** `2`
 
@@ -105,7 +107,7 @@ By how many spaces arrays should be indented. If set to `"tab"`, one tab will be
 
 ### `quotes`
 
-**Type:** `"single"|"double"`
+**Type:** `"single" | "double"`
 
 **Default:** `"single"`
 
@@ -127,7 +129,7 @@ If set to `false`, the value will be replaced with `null`.
 
 ### `onCircular`
 
-**Type:** `"null"|"nullWithComment"|"string"|"throw"`
+**Type:** `"null" | "nullWithComment" | "string" | "throw"`
 
 **Default:** `"nullWithComment"`
 

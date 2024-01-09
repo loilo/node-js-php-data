@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html data-theme="auto">
   <head>
+    <script type="module" src="./js/script.ts"></script>
+    <link rel="stylesheet" href="./css/stylesheet.scss" />
     <script>
       // Set theme as early as possible
       if (window.localStorage.getItem('theme')) {
-        document.documentElement.dataset.theme = window.localStorage.getItem(
-          'theme'
-        )
+        document.documentElement.dataset.theme =
+          window.localStorage.getItem('theme')
       }
 
       // Use correct height for mobile devices
@@ -77,7 +78,7 @@
             <option value="5">5 Spaces</option>
             <option value="6">6 Spaces</option>
             <option value="7">7 Spaces</option>
-            <option value="8">8 Spaces</option> </select
+            <option value="8">8 Spaces</option></select
           ><label
             for="indentation"
             data-tpl='{
@@ -96,7 +97,7 @@
         <span
           ><select id="quotes" class="option-ui" data-option="quotes">
             <option value="single" selected>Single</option>
-            <option value="double">Double</option> </select
+            <option value="double">Double</option></select
           ><label
             for="quotes"
             data-tpl='{
@@ -119,11 +120,11 @@
         <span
           ><select id="on-circular" class="option-ui" data-option="onCircular">
             <option value="null">Replace with null</option>
-            <option value="nullWithComment" selected
-              >Replace with null + comment</option
-            >
+            <option value="nullWithComment" selected>
+              Replace with null + comment
+            </option>
             <option value="string">Replace with string</option>
-            <option value="throw">Throw an Error</option> </select
+            <option value="throw">Throw an Error</option></select
           ><label
             for="on-circular"
             data-tpl='{
@@ -137,17 +138,14 @@
         <span class="show-all"><button class="seamless">More</button></span>
       </div>
       <div class="input">
-        <textarea class="input" id="input">
-// Return whatever JS you want to be converted to PHP
-
-return null</textarea
-        >
+        <!-- prettier-ignore -->
+        <div class="input" id="input" data-content="// JavaScript data to convert
+null"></div>
       </div>
-      <hr class="output-gutter" />
       <div class="output">
-        <textarea class="output" id="output">null</textarea>
+        <!-- prettier-ignore -->
+        <div class="output" id="output" data-content="null"></div>
       </div>
-      <ul class="msg"></ul>
     </div>
   </body>
 </html>
