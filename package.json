@@ -1,7 +1,7 @@
 {
   "name": "js-php-data",
   "type": "module",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "Convert simple JS data to PHP",
   "main": "dist/js-php-data.cjs",
   "module": "dist/js-php-data.modern.js",
