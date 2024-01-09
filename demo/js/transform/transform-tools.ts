@@ -49,6 +49,7 @@ function transformCodeToExpressionCode(code: string): {
     sourceType: 'module',
     allowAwaitOutsideFunction: true
   })
+
   const importers: Array<{ importer: string; specifiers: string }> = []
   estree.walk(ast as any, {
     enter(node, parent) {
@@ -56,6 +57,16 @@ function transformCodeToExpressionCode(code: string): {
       const parentAny = parent as any
 
       switch (node.type) {
+        case 'BlockStatement': {
+          if (
+            parent.type === 'Program' &&
+            parent.body[parent.body.length - 1] === node
+          ) {
+            modifiedCode.appendLeft(nodeAny.start, `response${id} = `)
+          }
+          break
+        }
+
         // We need to rewrite all import declarations because they would be hoisted,
         // and we need to run code before the first import actually happens
         case 'ImportDeclaration': {
