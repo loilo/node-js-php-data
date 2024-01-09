@@ -26,6 +26,17 @@ function transformCodeToExpressionCode(code: string): {
   map: string
   usesImports: boolean
 } {
+  if (code.trim().length === 0) {
+    const string = new MagicString(code)
+    string.append('null')
+
+    return {
+      code: string.toString(),
+      map: string.generateMap({ hires: true }).toString(),
+      usesImports: false
+    }
+  }
+
   try {
     JSON5.parse(code)
 
