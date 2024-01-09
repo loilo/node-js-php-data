@@ -45,6 +45,7 @@ function transformCodeToExpressionCode(code: string): {
 
   const modifiedCode = new MagicString(code)
   const ast = acorn.parse(code, {
+    allowReturnOutsideFunction: true,
     ecmaVersion: 'latest',
     sourceType: 'module',
     allowAwaitOutsideFunction: true
